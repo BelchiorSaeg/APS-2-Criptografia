@@ -29,8 +29,8 @@ def complexbility(complexidade):
     complexidade = (qntd_algarismos*2)
     return complexidade
 
-def complexbility_2(complexidade):
-    if complexidade%3 == 0: complexidade = " ",
+def complexbility_2(complexidade): # Desabilitado
+    if complexidade == "ABC": complexidade = " ",
     else: complexidade = () 
     return complexidade
 
