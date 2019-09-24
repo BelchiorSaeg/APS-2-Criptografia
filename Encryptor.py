@@ -1,8 +1,9 @@
-import random
+# -*- coding: utf-8 -*-
+"""
+@author: Belchior
 
-##  Chave de Desencriptação:
-chave_dec = random.randrange(1,99)
-chave_dec = chave_dec, random.randrange(1,chave_dec)
+"""
+import random
 
 ##   Obs: o termo "Célula" é usado neste algoritmo para designar cada valor de uma lista.
 
@@ -17,11 +18,11 @@ def separador(sep): return random.choice(list("ABCDEFGHIJKLMNO"))
 
 
 ##   Peso que Adiciona Compexibilidade á mensagem criptografada
-def complexidade(qntd_celula): return (qntd_celula * int(chave_dec[0]) - int(chave_dec[1]))
+def complexidade(qntd_celula): return ((qntd_celula + int(chave_dec[4])) * int(chave_dec[0]) - int(chave_dec[2]))
 
 
 ##   Remove a Complexidade
-def descomplexar(qntd_celula): return - (qntd_celula * int(chave_dec[0]) - int(chave_dec[1]))
+def descomplexar(qntd_celula): return - ((qntd_celula + int(chave_dec[2])) * int(chave_dec[0]) - int(chave_dec[1]))
 
 
 ##   Tabela de Valores - Contém o novo valor para cada caractere a ser criptografado
@@ -67,6 +68,62 @@ def decrypter(celula):
     return ""
 
 
+##   Processo de geração da chave de encriptação
+
+
+
+def GerarChave():
+        
+    #  Geração da Chave:
+    key       = list(input("\n\nDigite uma Frase qualquer, quanto maior, mais segura será sua encriptação: \n\n"))
+    
+    chave_dec = [random.randint(0,999),random.randint(0,999),random.randint(0,999)]
+
+    if key == []: key = list("Frase Padrão")      
+    for x in range(0,len(key)): key[x] = converter_tabela(key[x])
+    
+        
+    #Algarismo 3---
+    posic   = len(key)
+    soma    = 0
+    
+    for numero in key:
+        soma  = soma + numero * posic
+        posic = posic - 1
+    while soma > 900: soma = soma / random.randint(1,5)
+    
+    chave_dec[2] = int( (soma + chave_dec[2]) / 2 )
+    
+    #Algarismo 2---
+    soma = soma / 2
+
+    for numero in range(0,3): soma = soma + (random.choice(key))
+    while soma > 900: soma = soma / random.randint(1,5)
+
+    chave_dec[1] = int( (soma + chave_dec[1]) / 2 )
+
+    #Algarismo 1----
+    soma = chave_dec[0] + chave_dec[1] + len(key)
+    soma = soma / 3
+    soma = soma + (random.randint(0,999)+random.randint(0,999)+random.randint(0,999))
+    soma = soma / 3
+    
+    while soma > 900: soma = soma / random.randint(1,5)
+    
+    chave_dec[0]   = int( (soma + chave_dec[0]) / 2 )
+
+
+    # Impressão de Chave
+    
+    chave_dec.insert(1,"-")
+    chave_dec.insert(3,"-")
+    for x in chave_dec: chave_dec[chave_dec.index(x)] = str(x)
+        
+    print("\nSua chave de Desencriptação: ",ListToText(chave_dec))
+        
+    return chave_dec    
+
+    
 ##   Processo de Criptografar
 def Criptografar(msg):
 
@@ -86,12 +143,11 @@ def Criptografar(msg):
     msg_bytes                   = []
     qntd_algarismo              = 0
 
-
     # Processamento
     for x in (list(ListToText(msg_crypted))):
 
         qntd_algarismo          = qntd_algarismo + 1
-    
+  
         if qntd_algarismo > 8:
             qntd_algarismo      = 0
             msg_bytes           = msg_bytes + [" "] + [x]   
@@ -99,8 +155,6 @@ def Criptografar(msg):
             msg_bytes           = msg_bytes + [x]
             
     msg_crypted = msg_bytes
-    
-    ##
 
     return ListToText(msg_crypted)
 
@@ -155,16 +209,15 @@ while op != "1" and op != "2":
     print("\nOpção Invalida!! \n")
     op = input("Digite novamente: ")
 
+
 ## Gera a mensagem Criptografada
 if op == "1":
     
-    print("\nMensagem Criptografada: \n\n{} ".format(Criptografar(input("\nDigite uma mensagem a ser Criptografada: \n\n"))))
+    msg = (input("\nDigite uma mensagem a ser Criptografada: \n\n"))
 
-    # Impressão de Chave
-    chave_dec = list(chave_dec)
-    chave_dec.insert(int(len(chave_dec)//2),"-")
-    for x in chave_dec: chave_dec[chave_dec.index(x)] = str(x)
-    print("\nSua chave de Desencriptação: ",ListToText(chave_dec))
+    chave_dec = GerarChave()
+    
+    print("\nMensagem Criptografada: \n\n{} ".format(Criptografar(msg)))
 
 ## Gera a mensagem Descriptografada
 elif op == "2":
@@ -175,6 +228,11 @@ elif op == "2":
     chave_dec = list(input("\nDigite a chave de Desencriptação: \n\n"))
     chave_dec = "".join(chave_dec)
     chave_dec = chave_dec.split("-")
-
+            
+    while len(chave_dec) != 3: 
+        print("\n\nChave Invalida!\n")
+        chave_dec = list(input("\nDigite a chave de Desencriptação: \n\n"))
+        chave_dec = "".join(chave_dec)
+        chave_dec = chave_dec.split("-")
+    
     print("\nMensagem Descriptografada: \n\n{} ".format( Descriptografar(msg_c)) )
-
